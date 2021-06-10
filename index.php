@@ -110,11 +110,11 @@ if( !empty($_POST['btn_submit']) ) {
 if( !empty($pdo) ) {
 
     // メッセージのデータを取得する
-    $sql = "SELECT view_name,message,post_date FROM message ORDER BY post_date DESC";
+    $sql = "SELECT * FROM message ORDER BY post_date DESC";
     $message_array = $pdo->query($sql);
 }
 
-require("./alert_process.php");
+// require("./alert_process.php");
 
 // データベースの接続を閉じる
 $pdo = null;
@@ -163,12 +163,15 @@ $pdo = null;
         <time><?php echo date('Y年m月d日 H:i', strtotime($value['post_date'])); ?></time>
     </div>
     <p><?php echo nl2br( htmlspecialchars( $value['message'], ENT_QUOTES, 'UTF-8') ); ?></p>
-</article>
+
+<?php var_dump($value['id']);?>		
 		<!-- 通報 -->
-		<form method="post">
-      <input type="hidden" name="alert_message" value="<?php $value['id'] ?>">
+		<form method="post" action="alert_process.php">
+			<input type="hidden" name="alert_message" value="<?php if( !empty($value['id']) ){ echo htmlspecialchars( $value['id'], ENT_QUOTES, 'UTF-8'); } ?>">
       <input type="submit" name="btn_alert" value="通報">
   	</form>
+		
+</article>
 <?php } ?>
 <?php } ?>
 </section>
