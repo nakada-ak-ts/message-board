@@ -114,6 +114,8 @@ if( !empty($pdo) ) {
     $message_array = $pdo->query($sql);
 }
 
+require("./alert_process.php");
+
 // データベースの接続を閉じる
 $pdo = null;
 
@@ -162,6 +164,11 @@ $pdo = null;
     </div>
     <p><?php echo nl2br( htmlspecialchars( $value['message'], ENT_QUOTES, 'UTF-8') ); ?></p>
 </article>
+		<!-- 通報 -->
+		<form method="post">
+      <input type="hidden" name="alert_message" value="<?php $value['id'] ?>">
+      <input type="submit" name="btn_alert" value="通報">
+  	</form>
 <?php } ?>
 <?php } ?>
 </section>
