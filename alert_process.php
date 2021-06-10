@@ -36,9 +36,6 @@ try {
     $error_message[] = $e->getMessage();
 }
 
-
-var_dump($_POST);
-
 if( !empty($_POST['btn_alert'])){
 
   if( !empty($_POST['alert_message']) ){
