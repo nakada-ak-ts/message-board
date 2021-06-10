@@ -36,9 +36,13 @@ try {
     $error_message[] = $e->getMessage();
 }
 
-if( !empty($_POST['btn_alert'])){
+if( !empty($_POST['btn_alert']) && !empty($_POST['alert_message']) ){
+  $sql = "SELECT message_id FROM alert_message WHERE message_id = ".$_POST['alert_message'];
+  $alert_message_id = $pdo->query($sql);
+  foreach( $alert_message_id as $value);
 
-  if( !empty($_POST['alert_message']) ){
+  // すでに通報されている場合は、通報のコメントのみ表示する
+  if(  $_POST['alert_message'] !== $value[0] ){
 
     $current_date = date("Y-m-d H:i:s");
 
@@ -66,7 +70,7 @@ if( !empty($_POST['btn_alert'])){
           $pdo->rollBack();
       }
       
-      
+
       if( $res ) {
         $_SESSION['success_message'] = '通報しました。';
       } else {
@@ -76,10 +80,15 @@ if( !empty($_POST['btn_alert'])){
       // プリペアドステートメントを削除
       $stmt = null;
 
-      header('Location: ./');
+      header('Location: ./index.php');
       exit;
-      }
-  }
+
+    }else{
+      $_SESSION['success_message'] = '通報しました。';
+      header('Location: ./index.php');
+      exit;
+    }
+}
 
 $pdo = null;
 
