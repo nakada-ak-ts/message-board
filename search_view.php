@@ -15,6 +15,10 @@
   .menubar{
     margin: 0 0 20px 0;
   }
+  .alert_delete_button{
+    display: flex;
+    justify-content: flex-end;
+  }
   
 </style>
 </head>
@@ -34,14 +38,17 @@
         <div class="info">
           <h2><?php echo htmlspecialchars($value['view_name'],ENT_QUOTES,'UTF-8');?></h2>
           <time><?php echo date('Y年m月d日 H:i', strtotime($value['post_date']));?></time>
+          <button><a href="room_message.php?room_id=<?php echo $value['room_id']; ?>">ルームを見る</button>
         </div>
         <p>
           <?php echo nl2br(htmlspecialchars($value['message'],ENT_QUOTES,'UTF-8')); ?>
         </p>
-        <form method="post" action="alert_process.php">
-          <input type="hidden" name="alert_message" value="<?php if( !empty($value['id']) ){ echo htmlspecialchars( $value['id'], ENT_QUOTES, 'UTF-8'); } ?>">
-          <input type="submit" name="btn_alert" value="通報">
-        </form>
+        <div class="alert_delete_button">
+          <form method="post" action="alert_process.php">
+              <input type="hidden" name="alert_message" value="<?php if( !empty($value['id']) ){ echo htmlspecialchars( $value['id'], ENT_QUOTES, 'UTF-8'); } ?>">
+              <input type="submit" name="btn_alert" value="通報">
+          </form>
+      </div>
       </article>
     <?php } ;?>
   <?php }; ?>
