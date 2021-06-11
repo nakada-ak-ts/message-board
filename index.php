@@ -1,10 +1,8 @@
-
 <?php
 
-// データベースの接続情報
 define( 'DB_HOST', 'localhost');
 define( 'DB_USER', 'root');
-define( 'DB_PASS', 'root');
+define( 'DB_PASS', '');
 define( 'DB_NAME', 'board');
 
 // タイムゾーン設定
@@ -19,6 +17,9 @@ $pdo = null;
 $stmt = null;
 $res = null;
 $option = null;
+$room_id = 0;
+$rooms = array();
+$which_room = array();
 
 session_start();
 
@@ -42,6 +43,7 @@ if( !empty($_POST['btn_submit']) ) {
     // 空白除去
 	$view_name = preg_replace( '/\A[\p{C}\p{Z}]++|[\p{C}\p{Z}]++\z/u', '', $_POST['view_name']);
 	$message = preg_replace( '/\A[\p{C}\p{Z}]++|[\p{C}\p{Z}]++\z/u', '', $_POST['message']);
+    $room_id = $_POST["room_id"];
 
 	// 表示名の入力チェック
 	if( empty($view_name) ) {
@@ -74,12 +76,14 @@ if( !empty($_POST['btn_submit']) ) {
         try {
 
             // SQL作成
-            $stmt = $pdo->prepare("INSERT INTO message (view_name, message, post_date) VALUES ( :view_name, :message, :current_date)");
+            $stmt = $pdo->prepare("INSERT INTO message (view_name, message, post_date, room_id) VALUES ( :view_name, :message, :current_date, :room_id)");
 
             // 値をセット
             $stmt->bindParam( ':view_name', $view_name, PDO::PARAM_STR);
             $stmt->bindParam( ':message', $message, PDO::PARAM_STR);
             $stmt->bindParam( ':current_date', $current_date, PDO::PARAM_STR);
+            $stmt->bindParam( ':room_id', $room_id, PDO::PARAM_INT);
+
 
             // SQLクエリの実行
             $res = $stmt->execute();
@@ -112,6 +116,12 @@ if( !empty($pdo) ) {
     // メッセージのデータを取得する
     $sql = "SELECT * FROM message ORDER BY post_date DESC";
     $message_array = $pdo->query($sql);
+
+    $sql2 = "SELECT * FROM room ORDER BY name ASC";
+    $rooms = $pdo->query($sql2);
+
+    // $sql3 = "SELECT m.view_name, m.message, r.name, r.id FROM message m JOIN room r ON m.room_id = r.id";
+    // $which_room = $pdo->query($sql3);
 }
 
 // require("./alert_process.php");
@@ -131,10 +141,12 @@ $pdo = null;
 </head>
 <body>
 <h1>ひと言掲示板</h1>
+<!-- 成功のメッセージを表示する　-->
 <?php if( empty($_POST['btn_submit']) && !empty($_SESSION['success_message']) ): ?>
     <p class="success_message"><?php echo htmlspecialchars( $_SESSION['success_message'], ENT_QUOTES, 'UTF-8'); ?></p>
     <?php unset($_SESSION['success_message']); ?>
 <?php endif; ?>
+<!-- エラーメッセージを表示する　-->
 <?php if( !empty($error_message) ): ?>
     <ul class="error_message">
 		<?php foreach( $error_message as $value ): ?>
@@ -142,6 +154,7 @@ $pdo = null;
 		<?php endforeach; ?>
     </ul>
 <?php endif; ?>
+<!-- メッセージの投稿　-->
 <form method="post">
 	<div>
 		<label for="view_name">表示名</label>
@@ -151,17 +164,30 @@ $pdo = null;
 		<label for="message">ひと言メッセージ</label>
 		<textarea id="message" name="message"><?php if( !empty($message) ){ echo htmlspecialchars( $message, ENT_QUOTES, 'UTF-8'); } ?></textarea>
 	</div>
+    <!-- 投稿したいルームを選択する、DBからルームを取り出す　-->
+    <div>
+    <label for="room_id">ルーム</label>
+        <select name="room_id">
+            <?php if( !empty($rooms) ): ?>
+            <?php foreach( $rooms as $room ): ?>
+                <option value="<?php echo $room["id"]?>"><?php echo $room["name"]; ?></option>
+            <?php endforeach; ?>
+            <?php endif; ?>
+        </select>
+    </div>
+    <br>
 	<input type="submit" name="btn_submit" value="書き込む">
     <a href="./admin.php">管理ページ</a>
 </form>
 <hr>
 <section>
-<?php if( !empty($message_array) ){ ?>
-<?php foreach( $message_array as $value ){ ?>
+<?php if( !empty($message_array) ): ?>
+<?php foreach( $message_array as $value ): ?>
 <article>
     <div class="info">
         <h2><?php echo htmlspecialchars( $value['view_name'], ENT_QUOTES, 'UTF-8'); ?></h2>
         <time><?php echo date('Y年m月d日 H:i', strtotime($value['post_date'])); ?></time>
+        <p><a href="room_message.php?room_id=<?php echo $value['room_id']; ?>">ルームを見る</a>
     </div>
     <p><?php echo nl2br( htmlspecialchars( $value['message'], ENT_QUOTES, 'UTF-8') ); ?></p>
 		
@@ -172,8 +198,8 @@ $pdo = null;
   	</form>
 		
 </article>
-<?php } ?>
-<?php } ?>
+<?php endforeach; ?>
+<?php endif; ?>
 </section>
 </body>
 </html>
