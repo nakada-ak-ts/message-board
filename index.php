@@ -152,6 +152,7 @@ $pdo = null;
 		<textarea id="message" name="message"><?php if( !empty($message) ){ echo htmlspecialchars( $message, ENT_QUOTES, 'UTF-8'); } ?></textarea>
 	</div>
 	<input type="submit" name="btn_submit" value="書き込む">
+    <a href="./admin.php">管理ページ</a>
 </form>
 <hr>
 <section>
