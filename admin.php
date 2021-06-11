@@ -61,7 +61,7 @@ if( !empty($pdo) ) {
     $message_array = $pdo->query($sql);
 
     $alert_sql = "
-    SELECT * 
+    SELECT count(*)
     FROM message
     LEFT JOIN alert_message
     ON message.id = alert_message.message_id
@@ -75,7 +75,7 @@ if( !empty($pdo) ) {
 $pdo = null;
 
 foreach( $alert_message_array as $alert_value);
-$alert_report_count = count($alert_value);
+$alert_report_count = $alert_value[0];
 
 ?>
 <!DOCTYPE html>
@@ -85,6 +85,11 @@ $alert_report_count = count($alert_value);
 <title>ひと言掲示板 管理ページ</title>
 <style>
 	<?php require("./main.css"); ?>
+    .tools{
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+    }
 </style>
 </head>
 <body>
@@ -100,17 +105,21 @@ $alert_report_count = count($alert_value);
 
 <?php if( !empty($_SESSION['admin_login']) && $_SESSION['admin_login'] === true ): ?>
 
-<form method="get" action="./download.php">
-    <select name="limit">
-        <option value="">全て</option>
-        <option value="10">10件</option>
-        <option value="30">30件</option>
-    </select>
-    <input type="submit" name="btn_download" value="ダウンロード">
-</form>
-
-<a href="./alert_admin.php" >通知レポート <?php if( $alert_report_count !== 0){ echo "(".$alert_report_count.")"; } ?></a>
-
+<div class="tools">
+	<div>
+		<form method="get" action="./download.php">
+				<select name="limit">
+						<option value="">全て</option>
+						<option value="10">10件</option>
+						<option value="30">30件</option>
+				</select>
+				<input type="submit" name="btn_download" value="ダウンロード">
+		</form>
+	</div>
+	<div>
+		<a href="./alert_admin.php" >通知レポート <?php if( $alert_report_count !== 0){ echo "(".$alert_report_count.")"; } ?></a>
+	</div>
+</div>
 
 <?php if( !empty($message_array) ){ ?>
 <?php foreach( $message_array as $value ){ ?>
