@@ -48,12 +48,6 @@ if( !empty($_GET['room_id']) ) {
  
      // 表示するデータを取得
      $message_array = $stmt->fetchAll();
- 
-     // 投稿データが取得できないときは管理ページに戻る
-     if( empty($message_array) ) {
-         header("Location: ./php");
-         exit;
-     }
 
      $stmt1 = $pdo->prepare("SELECT name,description FROM room WHERE room.id = :room_id");
      $stmt1->bindValue( ':room_id', $_GET['room_id'], PDO::PARAM_INT);
@@ -97,8 +91,8 @@ if( !empty($_GET['room_id']) ) {
 
 <!-- ルームごとのメッセージを表示する　-->
 <section>
-<?php if( !empty($message_array) ): ?>
-<?php foreach( $message_array as $value ): ?>
+<?php if( !empty($message_array) ){ ?>
+<?php foreach( $message_array as $value ){ ?>
 <article>
     <div class="info">
         <h2><?php echo htmlspecialchars( $value['view_name'], ENT_QUOTES, 'UTF-8'); ?></h2>
@@ -106,8 +100,13 @@ if( !empty($_GET['room_id']) ) {
     </div>
     <p><?php echo nl2br( htmlspecialchars( $value['message'], ENT_QUOTES, 'UTF-8') ); ?></p>
 </article>
-<?php endforeach; ?>
-<?php endif; ?>
+<?php } ?>
+<?php } else{ ?>
+    <div class="info">
+    <br>
+        <p>一言メッセージがありません。<br>こちらのルームにすぐ<a href="./index.php">投稿</a>しましょう！</p><br>
+    </div>
+    <?php } ?>
 </section>
 </body>
 </html>
