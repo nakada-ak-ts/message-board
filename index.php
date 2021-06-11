@@ -180,6 +180,12 @@ $pdo = null;
     <a href="./admin.php">管理ページ</a>
 </form>
 <hr>
+<label>検索</label>
+  <form action="search_view.php" method="post">
+      <input type="text" name="search_word">
+      <input type="submit" name="btn_search" value="投稿を検索">
+  </form>
+  <hr>
 <section>
 <?php if( !empty($message_array) ): ?>
 <?php foreach( $message_array as $value ): ?>
@@ -194,7 +200,7 @@ $pdo = null;
 		<!-- 通報 -->
 		<form method="post" action="alert_process.php">
 			<input type="hidden" name="alert_message" value="<?php if( !empty($value['id']) ){ echo htmlspecialchars( $value['id'], ENT_QUOTES, 'UTF-8'); } ?>">
-      <input type="submit" name="btn_alert" value="通報">
+        <input type="submit" name="btn_alert" value="通報">
   	</form>
 		
 </article>
