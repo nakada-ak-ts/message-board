@@ -117,7 +117,7 @@ $alert_report_count = $alert_value[0];
 		</form>
 	</div>
 	<div>
-		<a href="./alert_admin.php" >通知レポート <?php if( $alert_report_count !== 0){ echo "(".$alert_report_count.")"; } ?></a>
+		<a href="./alert.php" >通知レポート <?php if( $alert_report_count !== 0){ echo "(".$alert_report_count.")"; } ?></a>
 	</div>
 </div>
 

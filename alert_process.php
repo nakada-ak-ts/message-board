@@ -90,6 +90,39 @@ if( !empty($_POST['btn_alert']) && !empty($_POST['alert_message']) ){
     }
 }
 
+
+// 通報DBから削除
+if( !empty($_POST['btn_alert_delete']) ){
+  // トランザクション開始
+  $pdo->beginTransaction();
+
+  try {
+
+      // SQL作成
+      $alert_stmt = $pdo->prepare("DELETE FROM alert_message WHERE message_id = :delete_alert_message_id");
+
+      // 値をセット
+      $alert_stmt->bindValue( ':delete_alert_message_id', $_POST['alert_message_delete'], PDO::PARAM_INT);
+
+      // SQLクエリの実行
+      $alert_stmt->execute();
+
+      // コミット
+      $res = $pdo->commit();
+
+  } catch(Exception $e) {
+
+      // エラーが発生した時はロールバック
+      $pdo->rollBack();
+  }
+
+  // 削除に成功したら一覧に戻る
+  if( $res ) {
+      header("Location: ./alert.php");
+      exit;
+  }
+}
+
 $pdo = null;
 
 ?>
