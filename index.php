@@ -113,6 +113,7 @@ if( !empty($_POST['btn_submit']) ) {
 
 if( !empty($pdo) ) {
 
+    // メッセージのデータを取得する
     $sql = "SELECT * FROM message ORDER BY post_date DESC";
     $message_array = $pdo->query($sql);
 
@@ -122,6 +123,8 @@ if( !empty($pdo) ) {
     // $sql3 = "SELECT m.view_name, m.message, r.name, r.id FROM message m JOIN room r ON m.room_id = r.id";
     // $which_room = $pdo->query($sql3);
 }
+
+// require("./alert_process.php");
 
 // データベースの接続を閉じる
 $pdo = null;
@@ -133,7 +136,7 @@ $pdo = null;
 <meta charset="utf-8">
 <title>ひと言掲示板</title>
 <style>
-    <?php require("./main.css"); ?>
+	<?php require("./main.css"); ?>
 </style>
 </head>
 <body>
@@ -174,6 +177,7 @@ $pdo = null;
     </div>
     <br>
 	<input type="submit" name="btn_submit" value="書き込む">
+    <a href="./admin.php">管理ページ</a>
 </form>
 <hr>
 <section>
@@ -186,6 +190,13 @@ $pdo = null;
         <p><a href="room_message.php?room_id=<?php echo $value['room_id']; ?>">ルームを見る</a>
     </div>
     <p><?php echo nl2br( htmlspecialchars( $value['message'], ENT_QUOTES, 'UTF-8') ); ?></p>
+		
+		<!-- 通報 -->
+		<form method="post" action="alert_process.php">
+			<input type="hidden" name="alert_message" value="<?php if( !empty($value['id']) ){ echo htmlspecialchars( $value['id'], ENT_QUOTES, 'UTF-8'); } ?>">
+      <input type="submit" name="btn_alert" value="通報">
+  	</form>
+		
 </article>
 <?php endforeach; ?>
 <?php endif; ?>
