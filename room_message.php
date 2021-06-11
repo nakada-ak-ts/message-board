@@ -17,6 +17,7 @@ $pdo = null;
 $stmt = null;
 $res = null;
 $option = null;
+$current_room = null;
 
 session_start();
 
@@ -53,9 +54,16 @@ if( !empty($_GET['room_id']) ) {
          header("Location: ./php");
          exit;
      }
+
+     $stmt1 = $pdo->prepare("SELECT name,description FROM room WHERE room.id = :room_id");
+     $stmt1->bindValue( ':room_id', $_GET['room_id'], PDO::PARAM_INT);
+     $stmt1->execute();
+     $current_room = $stmt1->fetch();
+
  }
 
  $stmt = null;
+ $stmt1 = null;
  $pdo = null;
 ?>
 <!DOCTYPE html>
@@ -68,8 +76,12 @@ if( !empty($_GET['room_id']) ) {
 </style>
 </head>
 <body>
-<h1>Welcome to Room...</h1>
-
+<h1>&#127752;「<?php echo $current_room["name"]; ?>」ルームへようこそ〜〜 &#127752;</h1>
+<hr>
+ <div class="info">
+    <p>&#10024;&#10024;&#10024;<?php echo $current_room["description"]; ?>&#10024;&#10024;&#10024;</p>
+ </div>
+ <hr>
 <!-- エラ〜メッセージを表示する　-->
 <?php if( !empty($error_message) ): ?>
     <ul class="error_message">
