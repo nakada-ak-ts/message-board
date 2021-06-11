@@ -16,6 +16,7 @@ date_default_timezone_set('Asia/Tokyo');
 $current_date = null;
 $message = array();
 $message_array = array();
+$alert_message_array = array();
 $success_message = null;
 $error_message = array();
 $pdo = null;
@@ -58,10 +59,23 @@ if( !empty($pdo) ) {
     // メッセージのデータを取得する
     $sql = "SELECT * FROM message ORDER BY post_date DESC";
     $message_array = $pdo->query($sql);
+
+    $alert_sql = "
+    SELECT * 
+    FROM message
+    LEFT JOIN alert_message
+    ON message.id = alert_message.message_id
+    WHERE alert_id is not null
+    ORDER BY alert_message.post_date DESC;    
+    ";
+    $alert_message_array = $pdo->query($alert_sql);
 }
 
 // データベースの接続を閉じる
 $pdo = null;
+
+foreach( $alert_message_array as $alert_value);
+$alert_report_count = count($alert_value);
 
 ?>
 <!DOCTYPE html>
@@ -94,6 +108,9 @@ $pdo = null;
     </select>
     <input type="submit" name="btn_download" value="ダウンロード">
 </form>
+
+<a href="./alert_admin.php" >通知レポート <?php if( $alert_report_count !== 0){ echo "(".$alert_report_count.")"; } ?></a>
+
 
 <?php if( !empty($message_array) ){ ?>
 <?php foreach( $message_array as $value ){ ?>
