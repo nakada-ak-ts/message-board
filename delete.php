@@ -18,6 +18,7 @@ $pdo = null;
 $stmt = null;
 $res = null;
 $option = null;
+$undo_page_domain = $_SERVER['HTTP_HOST'];
 
 session_start();
 
@@ -58,6 +59,7 @@ if( !empty($_GET['message_id']) && empty($_POST['message_id']) ) {
 	// 表示するデータを取得
 	$message_data = $stmt->fetch();
 
+
 	// 投稿データが取得できないときは管理ページに戻る
 	if( empty($message_data) ) {
 		header("Location: ./admin.php");
@@ -70,6 +72,26 @@ if( !empty($_GET['message_id']) && empty($_POST['message_id']) ) {
     $pdo->beginTransaction();
 
     try {
+
+			// 通報メッセージの登録データを確認
+			$alert_sql = "
+			SELECT message_id 
+			FROM message
+			LEFT JOIN alert_message
+			ON message.id = alert_message.message_id
+			WHERE alert_id is not null
+			AND message.id = ".$_POST['message_id'];
+
+			$alert_message_array = $pdo->query($alert_sql);
+			foreach( $alert_message_array as $alert_value);
+
+
+			if( $_POST['message_id'] === $alert_value['message_id'] ){
+				
+				$alert_stmt = $pdo->prepare("DELETE FROM alert_message WHERE message_id = :alert_message_id");
+				$alert_stmt->bindValue( ':alert_message_id', $alert_value['message_id'], PDO::PARAM_INT);
+        $alert_stmt->execute();
+			}
 
         // SQL作成
         $stmt = $pdo->prepare("DELETE FROM message WHERE id = :id");
@@ -91,7 +113,7 @@ if( !empty($_GET['message_id']) && empty($_POST['message_id']) ) {
 
     // 削除に成功したら一覧に戻る
     if( $res ) {
-        header("Location: ./admin.php");
+				header("Location: ./admin.php");
         exit;
     }
 }
@@ -129,7 +151,10 @@ $pdo = null;
 		<label for="message">ひと言メッセージ</label>
 		<textarea id="message" name="message" disabled><?php if( !empty($message_data['message']) ){ echo $message_data['message']; } elseif( !empty($message) ){ echo htmlspecialchars( $message, ENT_QUOTES, 'UTF-8'); } ?></textarea>
 	</div>
-	<a class="btn_cancel" href="admin.php">キャンセル</a>
+    <?php if (!empty($_SERVER['HTTP_REFERER']) && (strpos($_SERVER['HTTP_REFERER'],$undo_page_domain) !== false)) {
+	echo '<a class="btn_cancel" href="' . $_SERVER['HTTP_REFERER'] . '">キャンセル</a>';
+    }  ?>
+
 	<input type="submit" name="btn_submit" value="削除">
 	<input type="hidden" name="message_id" value="<?php if( !empty($message_data['id']) ){ echo $message_data['id']; } elseif( !empty($_POST['message_id']) ){ echo htmlspecialchars( $_POST['message_id'], ENT_QUOTES, 'UTF-8'); } ?>">
 </form>
