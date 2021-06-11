@@ -126,7 +126,7 @@ $pdo = null;
 		<?php endforeach; ?>
     </ul>
 <?php endif; ?>
-
+<!-- 新規ルーム作成　-->
 <form method="post">
 	<div>
 		<label for="room_name">ルーム名</label>
@@ -139,19 +139,19 @@ $pdo = null;
 	<input type="submit" name="btn_submit" value="新規作成">
 </form>
 
-
+<!-- 全てのルームを表示する　-->
 <section>
-<?php if( !empty($rooms) ){ ?>
-<?php foreach( $rooms as $value ){ ?>
-<article>
-    <div class="info">
-        <h2><a href="room_message.php?room_id=<?php echo $value['id']; ?>"><?php echo $value["name"]; ?></a></h2>
-        <time><?php echo date('Y年m月d日', strtotime($value['create_date'])); ?></time>
-    </div>
-    <p><?php echo $value["description"]; ?></p>
-</article>
-<?php } ?>
-<?php } ?>
+    <?php if( !empty($rooms) ){ ?>
+    <?php foreach( $rooms as $value ){ ?>
+    <article>
+        <div class="info">
+            <p><a href="./room_message.php?room_id=<?php echo $value['id']; ?>"><?php echo $value["name"]; ?></a></p>
+            <time><?php echo date('Y年m月d日', strtotime($value['create_date'])); ?></time>
+        </div>
+        <p><?php echo $value["description"]; ?></p>
+    </article>
+    <?php } ?>
+    <?php } ?>
 </section>
 </body>
 </html>

@@ -37,7 +37,7 @@ try {
 
 if( !empty($_GET['room_id']) ) {
 
-     $stmt = $pdo->prepare("SELECT * FROM message WHERE message.room_id = :room_id");
+     $stmt = $pdo->prepare("SELECT view_name,message,post_date FROM message WHERE message.room_id = :room_id");
 
      // 値をセット
      $stmt->bindValue( ':room_id', $_GET['room_id'], PDO::PARAM_INT);
@@ -46,7 +46,7 @@ if( !empty($_GET['room_id']) ) {
      $stmt->execute();
  
      // 表示するデータを取得
-     $message_array = $stmt->fetch();
+     $message_array = $stmt->fetchAll();
  
      // 投稿データが取得できないときは管理ページに戻る
      if( empty($message_array) ) {
@@ -85,18 +85,17 @@ if( !empty($_GET['room_id']) ) {
 
 <!-- ルームごとのメッセージを表示する　-->
 <section>
-
-<?php if( !empty($message_array) ){ ?>
-<?php foreach($message_array as $value){ ?>
+<?php if( !empty($message_array) ): ?>
+<?php foreach( $message_array as $value ): ?>
 <article>
     <div class="info">
-            <h2><?php echo $value['view_name']; ?></h2>
-            <time><?php echo date('Y年m月d日 H:i', strtotime($value['post_date'])); ?></time>
+        <h2><?php echo htmlspecialchars( $value['view_name'], ENT_QUOTES, 'UTF-8'); ?></h2>
+        <time><?php echo date('Y年m月d日 H:i', strtotime($value['post_date'])); ?></time>
     </div>
-    <p><?php echo $value['message']; ?></p></article>
-<?php } ?>
-<?php } ?>
+    <p><?php echo nl2br( htmlspecialchars( $value['message'], ENT_QUOTES, 'UTF-8') ); ?></p>
+</article>
+<?php endforeach; ?>
+<?php endif; ?>
 </section>
-
 </body>
 </html>
