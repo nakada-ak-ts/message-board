@@ -74,6 +74,10 @@ $pdo = null;
 <title>ひと言掲示板 管理ページ（通報レポート）</title>
 <style>
 	<?php require("./main.css"); ?>
+  .alert_delete_button{
+    display: flex;
+    justify-content: flex-end;
+  }
 </style>
 </head>
 <body>
@@ -99,6 +103,12 @@ $pdo = null;
           <p><a href="delete.php?message_id=<?php echo $value['id']; ?>">削除</a></p>
       </div>
       <p><?php echo nl2br( htmlspecialchars( $value['message'], ENT_QUOTES, 'UTF-8') ); ?></p>
+      <div class="alert_delete_button">
+        <form method="post" action="alert_process.php">
+          <input type="hidden" name="alert_message_delete" value="<?php if( !empty($value['id']) ){ echo htmlspecialchars( $value['id'], ENT_QUOTES, 'UTF-8'); } ?>">
+          <input type="submit" name="btn_alert_delete" value="通報一覧から削除">
+        </form>
+      </div>
   </article>
   <?php } ?>
 <?php } ?>
