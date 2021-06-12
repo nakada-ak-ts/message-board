@@ -3,7 +3,8 @@
 // データベースの接続情報
 define( 'DB_HOST', 'localhost');
 define( 'DB_USER', 'root');
-define( 'DB_PASS', 'root');
+//define( 'DB_PASS', 'root');
+define( 'DB_PASS', '');
 define( 'DB_NAME', 'board');
 
 // タイムゾーン設定
@@ -11,7 +12,7 @@ date_default_timezone_set('Asia/Tokyo');
 
 // 変数の初期化
 $view_name = null;
-$message = array();
+$message = null;
 $message_data = null;
 $error_message = array();
 $pdo = null;
